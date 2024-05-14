@@ -1,10 +1,6 @@
 import { Metadata } from 'next';
-import Image from "next/image";
-import axios from 'axios';
-import https from 'https';
 import * as Stat from '../types/stat';
 import './page.scss';
-
 import { Statistics } from "../components/Statistics/Statistics";
 
 export const metadata: Metadata = {
@@ -25,21 +21,17 @@ export const metadata: Metadata = {
 };
 
 export default async function Home() {
-
   async function getApiStarters() {
-    const url = 'https://api.v3.livetrail.net/api/events/statistics/starters';
-    const headers = {
-      'accept': 'application/json',
-      'X-Tenant': 'ecotrail_2024',
-    };
-    const agent = new https.Agent({ rejectUnauthorized: false });
-    const instance = axios.create({
-      httpsAgent: agent,
-    });
-
-    const response = await instance.get(url, { headers });
-    const data: Stat.StatInterface[] = await response.data.races;
-    return data;
+    const response = await fetch('http://api.v3.livetrail.net/api/events/statistics/starters', {
+      method: 'GET',
+      headers : {
+        'accept': 'application/json',
+        'X-Tenant': 'ecotrail_2024',
+      },
+    })
+    const data = await response.json();
+    const races : Stat.StatInterface[] = data.races;
+    return (races);
   }
 
   const starters = await getApiStarters();
